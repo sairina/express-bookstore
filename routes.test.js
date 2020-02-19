@@ -101,7 +101,7 @@ describe("books routes tests", function () {
     expect(responseTwo.statusCode).toBe(400);
   });
 
-  test("PUT /books:id", async function () {
+  test("PUT /books/:id", async function () {
     let b1Update = {
       "isbn": "0691161518",
       "author": "Will Grover",
@@ -128,7 +128,46 @@ describe("books routes tests", function () {
         "year": b1Update.year
       }
     });
+  });
 
+  test("PUT does not put to /books/:id", async function () {
+    let b1Update = {
+      "isbn": "0691161518",
+      "author": "Will Grover",
+      "language": "english",
+      "pages": 264,
+      "publisher": "Princeton University Press",
+      "title": "Power-Up: Unlocking the Hidden Mathematics in Video Games",
+      "year": 2017
+    }
+
+    const response = await request(app)
+      .put(`/books/none`)
+      .send(b1Update);
+
+      expect(response.statusCode).toBe(404);
+
+      b1Update.pages = "264";
+
+    const responseTwo = await request(app)
+      .put(`/books/${b1.isbn}`)
+      .send(b1Update);
+
+      expect(responseTwo.statusCode).toBe(400);
+  });
+
+  test("DELETE /books/:id", async function () {
+    const response = await request(app)
+      .delete(`/books/${b1.isbn}`)
+
+    expect(response.statusCode).toBe(200);
+  });
+
+  test("DELETE does not delete /books/:id", async function () {
+    const response = await request(app)
+      .delete(`/books/none`)
+
+    expect(response.statusCode).toBe(404);
   });
 });
 
